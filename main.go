@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 )
 
@@ -223,8 +224,8 @@ func (b *Build) buildFairRoot() error {
 	}
 
 	for _, args := range [][]string{
-		{"cmake", "-DCMAKE_INSTALL_PREFIX=" + b.FairRootPath, filepath.Join(b.Dir, "src/fair-root")},
-		{"make"},
+		{"cmake", "-DCMAKE_INSTALL_PREFIX=" + b.FairRootPath, "-DUSE_NANOMSG=1", filepath.Join(b.Dir, "src/fair-root")},
+		{"make", fmt.Sprintf("-j%d", runtime.NumCPU())},
 		{"make", "install"},
 	} {
 		cmd := command(args...)
@@ -250,7 +251,7 @@ func (b *Build) buildO2() error {
 
 	for _, args := range [][]string{
 		{"cmake", "../"},
-		{"make"},
+		{"make", fmt.Sprintf("-j%d", runtime.NumCPU())},
 	} {
 		cmd := command(args...)
 		cmd.Dir = bdir
