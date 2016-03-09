@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 )
 
 type Build struct {
@@ -25,6 +26,9 @@ func main() {
 	flag.BoolVar(&cfg.Docker, "use-container", false, "switch to build inside container")
 
 	flag.Parse()
+
+	log.SetFlags(0)
+	log.SetPrefix("o2-mgr ")
 
 	dir := "."
 	if flag.NArg() == 1 {
@@ -97,22 +101,25 @@ func main() {
 		}
 	}
 
-	err = ioutil.WriteFile(
-		filepath.Join(dir, "src/fair-config.cache"),
-		[]byte(fmt.Sprintf(
-			`compiler=gcc
+	var config = fmt.Sprintf(
+		`compiler=gcc
 debug=no
 optimize=yes
 geant4_download_install_data_automatic=no
 geant4_install_data_from_dir=no
-build_root6=no
-build_python=yes
+build_root6=yes
+build_python=no
 install_sim=yes
 SIMPATH_INSTALL=%s
 platform=linux
 `,
-			cfg.SimPath,
-		)),
+		cfg.SimPath,
+	)
+
+	log.Printf("using config:\n===%v\n===\n", config)
+	err = ioutil.WriteFile(
+		filepath.Join(dir, "src/fair-config.cache"),
+		[]byte(config),
 		0644,
 	)
 	if err != nil {
@@ -128,19 +135,36 @@ platform=linux
 func (b *Build) Build() error {
 	var err error
 
-	err = os.Setenv("SIMPATH", b.SimPath)
-	if err != nil {
-		return err
-	}
+	for _, v := range []struct {
+		key string
+		val string
+	}{
+		{
+			key: "SIMPATH",
+			val: b.SimPath,
+		},
+		{
+			key: "FAIRROOTPATH",
+			val: b.FairRootPath,
+		},
+	} {
+		err = os.Setenv(v.key, v.val)
+		if err != nil {
+			log.Printf("error setenv %q to %q: %v\n", v.key, v.val, err)
+			return err
+		}
 
-	err = os.Setenv("PATH", b.SimPath+"/bin:"+os.Getenv("PATH"))
-	if err != nil {
-		return err
-	}
+		err = os.Setenv("PATH", v.val+"/bin:"+os.Getenv("PATH"))
+		if err != nil {
+			log.Printf("error prepending %q to %q: %v\n", v.val+"/bin", "PATH", err)
+			return err
+		}
 
-	err = os.Setenv("LD_LIBRARY_PATH", b.SimPath+"/lib:"+os.Getenv("LD_LIBRARY_PATH"))
-	if err != nil {
-		return err
+		err = os.Setenv("LD_LIBRARY_PATH", v.val+"/lib:"+os.Getenv("LD_LIBRARY_PATH"))
+		if err != nil {
+			log.Printf("error prepending %q to %q: %v\n", v.val+"/lib", "LD_LIBRARY_PATH", err)
+			return err
+		}
 	}
 
 	err = b.buildFairSoft()
@@ -163,10 +187,11 @@ func (b *Build) Build() error {
 
 func (b *Build) buildFairSoft() error {
 	var err error
-	cmd := run("./configure.sh ../fair-config.cache")
+	cmd := command("/bin/sh", "-c", "./configure.sh ../fair-config.cache")
 	cmd.Dir = filepath.Join(b.Dir, "src/fair-soft")
 	err = cmd.Run()
 	if err != nil {
+		log.Printf("error running command %s %s: %v\n", cmd.Path, strings.Join(cmd.Args, " "), err)
 		return err
 	}
 	return err
@@ -174,11 +199,56 @@ func (b *Build) buildFairSoft() error {
 
 func (b *Build) buildFairRoot() error {
 	var err error
+	bdir := filepath.Join(b.Dir, "src", "fair-root", "build")
+	err = os.MkdirAll(bdir, 0644)
+	if err != nil {
+		return err
+	}
+
+	for _, args := range [][]string{
+		{"cmake", "-DCMAKE_INSTALL_PREFIX=" + b.FairRootPath, filepath.Join(b.Dir, "src/fair-root")},
+		{"make"},
+		{"make", "install"},
+	} {
+		cmd := command(args...)
+		cmd.Dir = bdir
+		err = cmd.Run()
+		if err != nil {
+			log.Printf("error running command %s %s: %v\n", cmd.Path, strings.Join(cmd.Args, " "), err)
+			return err
+		}
+	}
+
 	return err
 }
 
 func (b *Build) buildO2() error {
 	var err error
+	bdir := filepath.Join(b.Dir, "src", "alice-o2", "build")
+	err = os.MkdirAll(bdir, 0644)
+	if err != nil {
+		return err
+	}
+
+	for _, args := range [][]string{
+		{"cmake", "../"},
+		{"make"},
+	} {
+		cmd := command(args...)
+		cmd.Dir = bdir
+		err = cmd.Run()
+		if err != nil {
+			log.Printf("error running command %s %s: %v\n", cmd.Path, strings.Join(cmd.Args, " "), err)
+			return err
+		}
+	}
+
+	log.Printf("\n\n")
+	log.Printf(strings.Repeat(":", 80))
+	log.Printf("o2 build complete\n")
+	log.Printf("run:\n$> source %s/config.sh\n\n", bdir)
+	log.Printf("to get a runtime environment\n")
+
 	return err
 }
 
