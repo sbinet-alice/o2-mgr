@@ -69,18 +69,18 @@ $> tree .
 ## Example
 
 ```sh
-$> oxy init dev
-oxy init dev
-oxy: init [/home/binet/dev/alice/o2/go/src/github.com/sbinet-alice/oxy/dev]...
+$> oxy init work
+oxy init work
+oxy: init [/home/binet/dev/alice/o2/go/work]...
 oxy: fetching repo [git://github.com/FairRootGroup/FairSoft]...
-Cloning into '/home/binet/dev/alice/o2/go/src/github.com/sbinet-alice/oxy/dev/src/fair-soft'...
+Cloning into '/home/binet/dev/alice/o2/go/work/src/fair-soft'...
 remote: Counting objects: 1030, done.
 remote: Total 1030 (delta 0), reused 0 (delta 0), pack-reused 1030
 Receiving objects: 100% (1030/1030), 17.80 MiB | 7.51 MiB/s, done.
 Resolving deltas: 100% (655/655), done.
 Checking connectivity... done.
 oxy: fetching repo [git://github.com/FairRootGroup/FairRoot]...
-Cloning into '/home/binet/dev/alice/o2/go/src/github.com/sbinet-alice/oxy/dev/src/fair-root'...
+Cloning into '/home/binet/dev/alice/o2/go/work/src/fair-root'...
 remote: Counting objects: 39765, done.
 remote: Compressing objects: 100% (137/137), done.
 remote: Total 39765 (delta 89), reused 2 (delta 2), pack-reused 39625
@@ -88,14 +88,14 @@ Receiving objects: 100% (39765/39765), 53.53 MiB | 13.94 MiB/s, done.
 Resolving deltas: 100% (28681/28681), done.
 Checking connectivity... done.
 oxy: fetching repo [git://github.com/AliceO2Group/AliceO2]...
-Cloning into '/home/binet/dev/alice/o2/go/src/github.com/sbinet-alice/oxy/dev/src/alice-o2'...
+Cloning into '/home/binet/dev/alice/o2/go/work/src/alice-o2'...
 remote: Counting objects: 34718, done.
 remote: Compressing objects: 100% (82/82), done.
 remote: Total 34718 (delta 42), reused 0 (delta 0), pack-reused 34633
 Receiving objects: 100% (34718/34718), 57.21 MiB | 17.78 MiB/s, done.
 Resolving deltas: 100% (26129/26129), done.
 Checking connectivity... done.
-oxy: config [/home/binet/dev/alice/o2/go/src/github.com/sbinet-alice/oxy/dev/src/config.cache]:
+oxy: config [/home/binet/dev/alice/o2/go/work/src/config.cache]:
 ## config for FairRoot externals
 compiler=gcc
 debug=no
@@ -129,7 +129,7 @@ Step 4 : USER oxy-dev
  ---> 43e36c2e8c0f
 Successfully built 43e36c2e8c0f
 
-$> cd dev
+$> cd work
 $> oxy build
 oxy: building fair-soft...
 The build process for the external packages for the FairRoot Project was started at 100316_120559
