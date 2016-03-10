@@ -9,7 +9,7 @@
 
 - `src`: a directory holding the `git` repositories of `FairSoft`, `FairRoot` and `AliceO2`,
 - `externals`: a directory holding the binaries+headers for the externals (_ie:_ `FairSoft`, _A.K.A_ `ROOT`, `CMake`, `nanomsg`, ...)
-- `sw`: a directory holding the binaries+headers for `FairRoot`
+- `install`: a directory holding the binaries+headers for `FairRoot`
 
 After having initialized and compiled the workarea, the layout of that workarea would look something like:
 
