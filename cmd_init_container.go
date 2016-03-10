@@ -143,9 +143,10 @@ from centos:7
 run yum update -y && yum install -y %[1]s
 
 ## create a user for the container
-run useradd -m -u %[2]s %[3]s
-## ROOT tries to install stuff under /usr/local/etc
-run chown -R %[3]s:%[3]s /usr/local/etc
+run useradd -m -u %[2]s  -G wheel,root %[3]s
+## add %[3]s to sudoers
+run echo '%[3]s ALL=(ALL:ALL) ALL' >> /etc/sudoers
+
 user %[3]s
 
 env CC=%[4]s
