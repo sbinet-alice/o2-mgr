@@ -2,6 +2,70 @@
 
 `oxy` is a simple program to bootstrap and manage a development environment for the [ALICE-O2](https://github.com/AliceO2Group/AliceO2) project.
 
+## Introduction
+
+`oxy` is a rather opinionated tool to bootstrap and manage a development environment for `O2`.
+`oxy` creates a workarea under which you will find:
+
+- `src`: a directory holding the `git` repositories of `FairSoft`, `FairRoot` and `AliceO2`,
+- `externals`: a directory holding the binaries+headers for the externals (_ie:_ `FairSoft`, _A.K.A_ `ROOT`, `CMake`, `nanomsg`, ...)
+- `sw`: a directory holding the binaries+headers for `FairRoot`
+
+After having initialized and compiled the workarea, the layout of that workarea would look something like:
+
+```sh
+$> tree .
+.
+├── externals
+│   ├── bin
+│   │   ├── ccmake
+│   │   ├── cmake
+│   │   ├── cpack
+│   │   ├── ctest
+│   │   ├── fairsoft-config
+│   │   └── ...
+│   ├── include
+│   │   ├── boost
+│   │   ├── FairSoftVersion.h
+│   │   ├── gsl
+│   │   └── gtest
+│   ├── lib
+│   │   ├── libboost_atomic.a
+│   │   └── ...
+│   ├── lib64 -> /opt/alice/sw/externals/lib
+│   └── share
+│       ├── aclocal
+│       ├── cmake-3.3
+│       ├── doc
+│       ├── info
+│       └── ...
+├── install
+└── src
+    ├── alice-o2
+    │   ├── README.md
+    │   ├── Resources
+    │   └── ...
+    ├── config.cache
+    ├── fair-root
+    │   ├── LICENSE
+    │   ├── README.md
+    │   ├── scripts
+    │   ├── templates
+    │   ├── test
+    │   └── ...
+    └── fair-soft
+        ├── alfaconfig.sh
+        ├── README.md
+        ├── scripts
+        ├── tools
+        └── ...
+```
+
+`oxy` uses a `centos:7` container where all the (known and) needed `DEPENDENCIES` to build the whole `AliceO2` software stack are installed.
+`oxy build` then proceeds with building the stack from within that container, with the `src` directory of the workarea mounted inside the container under `/opt/alice/src`, `externals` mounted as `/opt/alice/sw/externals` and `install` as `/opt/alice/sw/install`
+
+`oxy shell` allows to spawn commands inside that container (or to spawn an interactive `bash` shell.)
+
 ## Example
 
 ```sh
