@@ -11,7 +11,7 @@ import (
 
 var (
 	oxy *commander.Command
-	mgr *Mgr
+	mgr = newMgr()
 )
 
 const deps = `
@@ -30,6 +30,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("error: %v\n", err)
 	}
+
+	defer mgr.Release()
 
 	args := oxy.Flag.Args()
 	err = oxy.Dispatch(args)
@@ -54,14 +56,14 @@ func init() {
 	log.SetFlags(0)
 
 	oxy = &commander.Command{
-		UsageLine: "oxy manages an Alice-oxy build and development environment",
+		UsageLine: "oxy manages an AliceO2 build and development environment",
+		Short:     "manages a development environment",
 		Subcommands: []*commander.Command{
 			oxyMakeInit(),
 			oxyMakeInitContainer(),
 			oxyMakeBuild(),
+			oxyMakeShell(),
 		},
 		Flag: *flag.NewFlagSet("oxy", flag.ExitOnError),
 	}
-
-	mgr = newMgr()
 }
