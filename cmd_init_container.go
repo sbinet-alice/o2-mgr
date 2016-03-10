@@ -96,7 +96,7 @@ if [ -e "/opt/alice/src/alice-o2/build/config.sh" ] ; then
    echo "::: sourcing alice-o2 environment..."
    . /opt/alice/src/alice-o2/build/config.sh
    export PATH=${FAIRROOTPATH}/bin:${PATH}
-   export LD_LIBRARY_PATH=${FAIRROOTPATH}/lib:${LD_LIBRARY_PATH}
+   export LD_LIBRARY_PATH=${FAIRROOTPATH}/lib:${SIMPATH}/lib:${LD_LIBRARY_PATH}
    echo "::: sourcing alice-o2 environment... [done]"
 fi
 `),

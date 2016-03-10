@@ -11,7 +11,6 @@ import (
 	"runtime"
 	"strings"
 	"sync"
-	"time"
 )
 
 const (
@@ -248,7 +247,8 @@ func (mgr *Mgr) command(cmd string, args ...string) *exec.Cmd {
 }
 
 func (mgr *Mgr) drun(cmd dockerCmd) error {
-	id := fmt.Sprintf("oxy-dev-%d", time.Now().Unix())
+	// id := fmt.Sprintf("oxy-dev-%d", time.Now().Unix())
+	id := "oxy-box"
 	mgr.addContainer(id)
 	defer mgr.rmContainer(id)
 
@@ -265,6 +265,7 @@ func (mgr *Mgr) drun(cmd dockerCmd) error {
 		"-e", "CXX=" + mgr.Env.CXX,
 		"-e", "CC=" + mgr.Env.CC,
 		"--name", id,
+		"-h", id,
 		mgr.Container,
 		cmd.Cmd,
 	}

@@ -86,8 +86,67 @@ oxy: to get a runtime environment.
 oxy: build complete.
 oxy: bye.
 
-$> oxy shell
-
+$> oxy shell 
+::: sourcing alice-o2 environment...
+System during compilation: CentOS Linux release 7.2.1511 (Core) 
+                           x86_64
+System now               : CentOS Linux release 7.2.1511 (Core) 
+                           x86_64
+::: sourcing alice-o2 environment... [done]
+[oxy@oxy-box alice]$ ex1-sampler --id sampler1 --config-json-file /opt/alice/src/fair-root/examples/MQ/1-sampler-sink/ex1-sampler-sink.json 
+[15:32:51][STATE] Entering FairMQ state machine
+[15:32:51][INFO] *******************************************************************************************************************************
+[15:32:51][INFO] ************************************************     Program options found     ************************************************
+[15:32:51][INFO] *******************************************************************************************************************************
+[15:32:51][INFO] config-json-file = /opt/alice/src/fair-root/examples/MQ/1-sampler-sink/ex1-sampler-sink.json  [Type=string]  [provided value] *
+[15:32:51][INFO] id               = sampler1                                                                   [Type=string]  [provided value] *
+[15:32:51][INFO] io-threads       = 1                                                                          [Type=int]     [default value]  *
+[15:32:51][INFO] log-color-format = 1                                                                          [Type=bool]    [default value]  *
+[15:32:51][INFO] text             = Hello                                                                      [Type=string]  [default value]  *
+[15:32:51][INFO] verbose          = DEBUG                                                                      [Type=string]  [default value]  *
+[15:32:51][INFO] *******************************************************************************************************************************
+[15:32:51][DEBUG] Found device id 'sampler1' in JSON input
+[15:32:51][DEBUG] Found device id 'sink1' in JSON input
+[15:32:51][DEBUG] [node = device]   id = sampler1
+[15:32:51][DEBUG] 	 [node = channel]   name = data-out
+[15:32:51][DEBUG] 	 	 [node = socket]   socket index = 1
+[15:32:51][DEBUG] 	 	 	 type        = push
+[15:32:51][DEBUG] 	 	 	 method      = bind
+[15:32:51][DEBUG] 	 	 	 address     = tcp://*:5555
+[15:32:51][DEBUG] 	 	 	 sndBufSize  = 1000
+[15:32:51][DEBUG] 	 	 	 rcvBufSize  = 1000
+[15:32:51][DEBUG] 	 	 	 rateLogging = 0
+[15:32:51][DEBUG] ---- Channel-keys found are :
+[15:32:51][DEBUG] data-out
+[15:32:51][INFO] PID: 35
+[15:32:51][INFO] Using nanomsg library
+[15:32:51][STATE] Entering INITIALIZING DEVICE state
+[15:32:51][INFO] created socket device-commands.pub
+[15:32:51][INFO] bind socket device-commands.pub on inproc://commands
+[15:32:51][DEBUG] Validating channel "data-out[0]"... VALID
+[15:32:51][DEBUG] Initializing channel data-out[0] (push)
+[15:32:51][INFO] created socket data-out[0].push
+[15:32:51][DEBUG] Binding channel data-out[0] on tcp://*:5555
+[15:32:51][INFO] bind socket data-out[0].push on tcp://*:5555
+[15:32:51][INFO] created socket device-commands.sub
+[15:32:51][INFO] connect socket device-commands.sub to inproc://commands
+[15:32:52][STATE] Entering DEVICE READY state
+[15:32:52][STATE] Entering INITIALIZING TASK state
+[15:32:52][STATE] Entering READY state
+[15:32:52][STATE] Entering RUNNING state
+[15:32:52][INFO] Use keys to control the state machine:
+[15:32:52][INFO] [h] help, [p] pause, [r] run, [s] stop, [t] reset task, [d] reset device, [q] end, [j] init task, [i] init device
+[15:32:52][INFO] DEVICE: Running...
+[15:32:53][INFO] Sending "Hello"
+q
+[15:32:56][INFO] [q] end
+[15:32:56][STATE] Entering EXITING state
+[15:32:56][DEBUG] unblocked
+[15:32:56][DEBUG] Closing sockets...
+[15:32:56][DEBUG] Closed all sockets!
+[15:32:56][STATE] Exiting FairMQ state machine
+[oxy@oxy-box alice]$ exit
+$>
 ```
 
 ## Documentation
