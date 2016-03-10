@@ -1,13 +1,16 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"os/exec"
 	"os/signal"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"strings"
 	"sync"
@@ -236,6 +239,63 @@ func (mgr *Mgr) buildO2() error {
 	log.Printf("run:\n$> source %s/config.sh\n\n", container.SrcDir+"/alice-o2/build")
 	log.Printf("to get a runtime environment.\n")
 	return err
+}
+
+func (mgr *Mgr) getExtPkgs() (map[string]int, error) {
+	pkgs := make(map[string]int)
+	f, err := os.Open(filepath.Join(mgr.SrcDir, "fair-soft", "make_clean.sh"))
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	scan := bufio.NewScanner(f)
+	re := regexp.MustCompile(`^clean_(?P<PackageName>.*?)\(\).*?\{.*?`)
+	for scan.Scan() {
+		err = scan.Err()
+		if err != nil {
+			break
+		}
+		txt := scan.Text()
+		if !re.MatchString(txt) {
+			continue
+		}
+		sub := re.FindStringSubmatch(txt)
+		pkg := sub[1]
+		if pkg == "all" {
+			continue
+		}
+		pkgs[pkg] = 1
+
+	}
+	err = scan.Err()
+	if err == io.EOF {
+		err = nil
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return pkgs, err
+}
+
+func (mgr *Mgr) cleanExtPkg(pkg string) error {
+	cmd := dockerCmd{Cmd: "./make_clean.sh", Args: []string{pkg}, Dir: container.SrcDir + "/fair-soft/build"}
+	return mgr.drun(cmd)
+}
+
+func (mgr *Mgr) cleanFairSoft() error {
+	return mgr.cleanExtPkg("all")
+}
+
+func (mgr *Mgr) cleanFairRoot() error {
+	cmd := dockerCmd{Cmd: "make", Args: []string{"clean"}, Dir: container.SrcDir + "/fair-root/build"}
+	return mgr.drun(cmd)
+}
+
+func (mgr *Mgr) cleanO2() error {
+	cmd := dockerCmd{Cmd: "make", Args: []string{"clean"}, Dir: container.SrcDir + "/alice-o2/build"}
+	return mgr.drun(cmd)
 }
 
 func (mgr *Mgr) command(cmd string, args ...string) *exec.Cmd {

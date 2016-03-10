@@ -59,6 +59,7 @@ func init() {
 		UsageLine: "oxy manages an AliceO2 build and development environment",
 		Short:     "manages a development environment",
 		Subcommands: []*commander.Command{
+			oxyMakeClean(),
 			oxyMakeInit(),
 			oxyMakeInitContainer(),
 			oxyMakeBuild(),

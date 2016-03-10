@@ -222,6 +222,7 @@ oxy - manages a development environment
 Commands:
 
     build          build target(s)
+    clean          clean target(s)
     init           initialize a new workarea
     init-container init a container
     shell          run a shell
