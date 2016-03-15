@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/gonuts/commander"
 	"github.com/gonuts/flag"
@@ -37,6 +38,11 @@ func oxyRunBuild(cmd *commander.Command, args []string) error {
 
 		return fmt.Errorf("no container registered")
 	}
+
+	start := time.Now()
+	defer func() {
+		log.Printf("build time: %v\n", time.Since(start))
+	}()
 
 	err = mgr.Build()
 	if err != nil {

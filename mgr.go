@@ -193,7 +193,6 @@ func (mgr *Mgr) buildFairRoot() error {
 	for _, args := range [][]string{
 		{
 			"cmake", "-DCMAKE_INSTALL_PREFIX=" + container.FairRootPath,
-			"-DUSE_NANOMSG=1",
 			"-DCMAKE_CXX_COMPILER=" + mgr.Env.CXX,
 			"-DCMAKE_CC_COMPILER=" + mgr.Env.CC,
 			"../",
