@@ -73,6 +73,7 @@ func oxyRunInitContainer(cmd *commander.Command, args []string) error {
 		"subversion", "git", "flex", "bison", "imake", "redhat-lsb-core",
 		"python-devel", "libxml2-devel", "wget", "openssl-devel", "curl-devel",
 		"automake", "autoconf", "libtool", "which",
+		"sudo",
 	}
 
 	usr, err := user.Current()
@@ -90,6 +91,9 @@ if [ -f "/etc/bashrc" ] ; then
 fi
 
 export PYTHONSTARTUP=$HOME/.pythonrc.py
+
+## setup AliSW
+export MODULEPATH=/opt/alisw/el5/modulefiles:$MODULEPATH
 
 ## setup AliceO2 environment
 if [ -e "/opt/alice/src/alice-o2/build/config.sh" ] ; then
@@ -136,14 +140,34 @@ del readline
 	}
 
 	err = ioutil.WriteFile(
+		filepath.Join(tmp, "alisw-el5.repo"),
+		[]byte(`[alisw-el5]
+name=ALICE Software - EL5
+baseurl=https://ali-ci.cern.ch/repo/RPMS/el5.x86_64/
+enabled=1
+gpgcheck=0
+`),
+		0644,
+	)
+	if err != nil {
+		return err
+	}
+
+	err = ioutil.WriteFile(
 		filepath.Join(tmp, "Dockerfile"),
 		[]byte(fmt.Sprintf(`## Dockerfile for alice-oxy base dev env.
 from centos:7
 
 run yum update -y && yum install -y %[1]s
+run curl -o /etc/pki/ca-trust/source/anchors/CERN_Grid_CA.pem \
+    https://cafiles.cern.ch/cafiles/certificates/CERN%%20Grid%%20Certification%%20Authority.crt && \
+	update-ca-trust enable && \
+	update-ca-trust
+
+add alisw-el5.repo /etc/yum.repos.d/alisw-el5.repo
 
 ## create a user for the container
-run useradd -m -u %[2]s  -G wheel,root %[3]s
+run useradd -m -u %[2]s -p ""  -G wheel,root %[3]s
 ## add %[3]s to sudoers
 run echo '%[3]s ALL=(ALL:ALL) ALL' >> /etc/sudoers
 
