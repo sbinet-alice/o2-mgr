@@ -74,6 +74,7 @@ func oxyRunInitContainer(cmd *commander.Command, args []string) error {
 		"python-devel", "libxml2-devel", "wget", "openssl-devel", "curl-devel",
 		"automake", "autoconf", "libtool", "which",
 		"sudo",
+		"environment-modules",
 	}
 
 	usr, err := user.Current()
